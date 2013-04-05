@@ -1,3 +1,8 @@
+++++
+<img src="http://www.smorg.co.uk/images/check_diskstat.png"
+alt="Nagios GUI Screenshot" style="float:none" />
+++++
+
 Check Disk Stat
 ---------------
 
