@@ -1,14 +1,14 @@
-Check Switch Module
--------------------
+Check Disk Stat
+---------------
 
-Uses ENTITY-MIB and CISCO-ENTITY-FRU-CONTROL-MIB.
-Only bash and snmpwalk (or snmpbulkwalk) are required.
+Linux disk IO check. Reads /sys filesystem directly to query tps, read, write, avg. request size, avg. queue size and avg. wait time.
 
 *EXAMPLE OUTPUT*
 
 ----
 $ ./check_diskstat.sh -d sda -W 10 -C 20
-summary: 3 io/s, read 32 sectors (0kB/s), write 4216 sectors (43kB/s), queue size 0 in 48 seconds | tps=3io/s;;; read=341b/s;;; write=44970b/s;;; avgrq-sz=24;;; avgqu-sz=0;10;20; await=43ms;;;
+summary: 3 io/s, read 32 sectors (0kB/s), write 4216 sectors (43kB/s), queue size 0 in 48 seconds | 
+tps=3io/s;;; read=341b/s;;; write=44970b/s;;; avgrq-sz=24;;; avgqu-sz=0;10;20; await=43ms;;;
 ----
 
 *MANUAL PAGE*
