@@ -1,0 +1,39 @@
+Check Switch Module
+-------------------
+
+Uses ENTITY-MIB and CISCO-ENTITY-FRU-CONTROL-MIB.
+Only bash and snmpwalk (or snmpbulkwalk) are required.
+
+*EXAMPLE OUTPUT*
+
+----
+$ ./check_diskstat.sh -d sda -W 10 -C 20
+summary: 3 io/s, read 32 sectors (0kB/s), write 4216 sectors (43kB/s), queue size 0 in 48 seconds | tps=3io/s;;; read=341b/s;;; write=44970b/s;;; avgrq-sz=24;;; avgqu-sz=0;10;20; await=43ms;;;
+----
+
+*MANUAL PAGE*
+
+----
+./check_diskstat.sh -d DEVICE [ -w tps,read,write -c tps,read,write ] 
+    | [ -W qlen -C qlen ] | -h
+
+This plug-in is used to be alerted when maximum hard drive io/s, sectors
+read|write/s or average queue length is reached.
+
+  -d DEVICE            DEVICE must be without /dev (ex: -d sda)
+  -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)
+                       READ and WRITE are in sectors per seconds
+  -W/C NUM             Use average queue length thresholds instead..
+  -b                   Brief output.
+
+Performance data for graphing is supplied for tps, read, write, avgrq-sz,
+avgqu-sz and await (see iostat man page for details).
+
+Example: Tps, read and write thresholds:
+    ./check_diskstat.sh -d sda -w 200,100000,100000 -c 300,200000,200000
+
+Example: Average queue length threshold:
+    ./check_diskstat.sh -d sda -W 50 -C 100
+
+----
+
