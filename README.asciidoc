@@ -8,6 +8,16 @@ Check Disk Stat
 
 Linux disk IO check. Reads /sys filesystem directly to query tps, read, write, avg. request size, avg. queue size and avg. wait time.
 
+*INSTALL*
+
+Example:
+
+----
+wget https://raw.github.com/mclarkson/check_switch_module/master/check_diskstat.sh
+chmod +x check_diskstat.sh
+mv check_diskstat.sh /usr/lib64/nagios/plugins/
+----
+
 *EXAMPLE OUTPUT*
 
 ----
