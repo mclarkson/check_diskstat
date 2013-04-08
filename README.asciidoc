@@ -13,7 +13,7 @@ Linux disk IO check. Reads /sys filesystem directly to query tps, read, write, a
 Example:
 
 ----
-wget https://raw.github.com/mclarkson/check_switch_module/master/check_diskstat.sh
+wget https://raw.github.com/mclarkson/check_diskstat/master/check_diskstat.sh
 chmod +x check_diskstat.sh
 mv check_diskstat.sh /usr/lib64/nagios/plugins/
 ----
