@@ -1,6 +1,8 @@
 #!/bin/bash
 # Original Author: Unknown
 #
+# Changes: 12-Jul-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#          Added support for logical volume names.
 # Changes: 25-Feb-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 #          Added brief option to reduce size of output
 #          Added current user to cache file name. Allows other users
@@ -27,41 +29,43 @@ BRIEF=0
 
 show_help() {
     echo
-	echo "$0 -d DEVICE [ -w tps,read,write -c tps,read,write ] "
+    echo "$0 -d DEVICE [ -w tps,read,write -c tps,read,write ] "
     echo "    | [ -W qlen -C qlen ] | -h"
-	echo
-	echo "This plug-in is used to be alerted when maximum hard drive io/s, sectors"
+    echo
+    echo "This plug-in is used to be alerted when maximum hard drive io/s, sectors"
     echo "read|write/s or average queue length is reached."
-	echo
-	echo "  -d DEVICE            DEVICE must be without /dev (ex: -d sda)"
-	echo "  -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)"
-	echo "                       READ and WRITE are in sectors per seconds"
+    echo
+    echo "  -d DEVICE            DEVICE must be without /dev (ex: -d sda)."
+    echo "                       To specify a LVM logical volume use:"
+    echo "                       volgroup/logvol."
+    echo "  -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)"
+    echo "                       READ and WRITE are in sectors per seconds"
     echo "  -W/C NUM             Use average queue length thresholds instead.."
     echo "  -b                   Brief output."
-	echo
+    echo
     echo "Performance data for graphing is supplied for tps, read, write, avgrq-sz,"
     echo "avgqu-sz and await (see iostat man page for details)."
     echo
-	echo "Example: Tps, read and write thresholds:"
+    echo "Example: Tps, read and write thresholds:"
     echo "    $0 -d sda -w 200,100000,100000 -c 300,200000,200000"
     echo
-	echo "Example: Average queue length threshold:"
+    echo "Example: Average queue length threshold:"
     echo "    $0 -d sda -W 50 -C 100"
     echo
 }
 
 # process args
 while [ ! -z "$1" ]; do 
-	case $1 in
-		-b)	BRIEF=1 ;;
-		-d)	shift; DISK=${1////!} ;;
-		-w)	shift; WARNING=$1 ;;
-		-c)	shift; CRITICAL=$1 ;;
-		-W)	shift; WARN_QSZ=$1 ;;
-		-C)	shift; CRIT_QSZ=$1 ;;
-		-h)	show_help; exit 1 ;;
-	esac
-	shift
+    case $1 in
+        -b) BRIEF=1 ;;
+        -d) shift; ORIGDISK=$1; DISK=${1////!} ;;
+        -w) shift; WARNING=$1 ;;
+        -c) shift; CRITICAL=$1 ;;
+        -W) shift; WARN_QSZ=$1 ;;
+        -C) shift; CRIT_QSZ=$1 ;;
+        -h) show_help; exit 1 ;;
+    esac
+    shift
 done
 
 # generate HISTFILE filename
@@ -69,11 +73,11 @@ HISTFILE=/var/tmp/check_diskstat_`id -nu`.$DISK
 
 # check input parameters so we can continu !
 sanitize() {
-	# check device name
-	if [ -z "$DISK" ]; then
-		echo "Need device name, ex: sda"
-		exit $E_UNKNOWN
-	fi
+    # check device name
+    if [ -z "$DISK" ]; then
+        echo "Need device name, ex: sda"
+        exit $E_UNKNOWN
+    fi
 
     if [ -z $WARN_QSZ ]; then
         # check thresholds
@@ -85,7 +89,7 @@ sanitize() {
             echo "Need critical threshold"
             exit $E_UNKNOWN
         fi
-	
+    
         if [ -z "$WARN_TPS" -o -z "$WARN_READ" -o -z "$WARN_WRITE" ]; then
             echo "Need 3 values for warning threshold (tps,read,write)"
             exit $E_UNKNOWN
@@ -100,19 +104,19 @@ sanitize() {
             exit $E_UNKNOWN
         fi
     fi
-		
+        
 }
 
 readdiskstat() {
-	if [ ! -f "/sys/block/$1/stat" ]; then
-		return $E_UNKNOWN
-	fi
+    if [ ! -f "/sys/block/$1/stat" ]; then
+        return $E_UNKNOWN
+    fi
 
-	cat /sys/block/$1/stat
+    cat /sys/block/$1/stat
 }
 
 readhistdiskstat() {
-	[ -f $HISTFILE ] && cat $HISTFILE
+    [ -f $HISTFILE ] && cat $HISTFILE
 }
 
 # process thresholds
@@ -127,23 +131,34 @@ if [ -z $WARN_QSZ ]; then
 fi
 sanitize
 
+if [ ! -e /sys/block/$DISK/stat ]; then
+    # The device does not exist. See if it's a logical volume
+    if [[ $ORIGDISK =~ "/" && -L /dev/$ORIGDISK ]]; then
+        # Dereference the link
+        DISK=`readlink -f /dev/$ORIGDISK`
+        DISK=${DISK##*/}
+    else
+        echo "Could not find disk stats, check your /sys filesystem for $DISK"
+        exit $E_UNKNOWN
+    fi
+fi
 
 NEWDISKSTAT=$(readdiskstat $DISK)
 if [ $? -eq $E_UNKNOWN ]; then
-	echo "Cannot read disk stats, check your /sys filesystem for $DISK"
-	exit $E_UNKNOWN
+    echo "Cannot read disk stats, check your /sys filesystem for $DISK"
+    exit $E_UNKNOWN
 fi
 
 if [ ! -f $HISTFILE ]; then
-	echo $NEWDISKSTAT >$HISTFILE
-	echo "UNKNOWN - Initial buffer creation..." 
-	exit $E_UNKNOWN
+    echo $NEWDISKSTAT >$HISTFILE
+    echo "UNKNOWN - Initial buffer creation..." 
+    exit $E_UNKNOWN
 fi
 
 OLDDISKSTAT=$(readhistdiskstat)
 if [ $? -ne 0 ]; then
-	echo "Cannot read histfile $HISTFILE..."
-	exit $E_UNKNOWN
+    echo "Cannot read histfile $HISTFILE..."
+    exit $E_UNKNOWN
 fi
 OLDDISKSTAT_TIME=$(stat $HISTFILE | grep Modify | sed 's/^.*: \(.*\)$/\1/')
 OLDDISKSTAT_EPOCH=$(date -d "$OLDDISKSTAT_TIME" +%s)

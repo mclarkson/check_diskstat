@@ -37,7 +37,9 @@ tps=3io/s;;; read=341b/s;;; write=44970b/s;;; avgrq-sz=24;;; avgqu-sz=0;10;20; a
 This plug-in is used to be alerted when maximum hard drive io/s, sectors
 read|write/s or average queue length is reached.
 
-  -d DEVICE            DEVICE must be without /dev (ex: -d sda)
+  -d DEVICE            DEVICE must be without /dev (ex: -d sda).
+                       To specify a LVM logical volume use:
+                       volgroup/logvol.
   -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)
                        READ and WRITE are in sectors per seconds
   -W/C NUM             Use average queue length thresholds instead..
