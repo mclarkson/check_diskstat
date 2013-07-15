@@ -132,11 +132,15 @@ fi
 sanitize
 
 if [ ! -e /sys/block/$DISK/stat ]; then
-    # The device does not exist. See if it's a logical volume
-    if [[ $ORIGDISK =~ "/" && -L /dev/$ORIGDISK ]]; then
-        # Dereference the link
-        DISK=`readlink -f /dev/$ORIGDISK`
-        DISK=${DISK##*/}
+    # The device does not exist.
+    if [[ $ORIGDISK =~ "/" && -b /dev/$ORIGDISK ]]; then
+        # The minor device no. maps to /dev/dm-N
+        MINOR=`stat -L /dev/$ORIGDISK --printf="%T\n"`
+        [[ $? -ne 0 ]] && {
+            echo "Could not stat '/dev/$ORIGDISK', check your /sys filesystem for $DISK"
+            exit $E_UNKNOWN
+        }
+        DISK="dm-$MINOR"
     else
         echo "Could not find disk stats, check your /sys filesystem for $DISK"
         exit $E_UNKNOWN
