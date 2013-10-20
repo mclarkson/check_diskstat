@@ -26,6 +26,7 @@ E_CRITICAL=2
 E_UNKNOWN=3
 
 BRIEF=0
+SILENT=0
 
 show_help() {
     echo
@@ -42,6 +43,7 @@ show_help() {
     echo "                       READ and WRITE are in sectors per seconds"
     echo "  -W/C NUM             Use average queue length thresholds instead.."
     echo "  -b                   Brief output."
+    echo "  -s                   silent output: no warnings or critials are issued"
     echo
     echo "Performance data for graphing is supplied for tps, read, write, avgrq-sz,"
     echo "avgqu-sz and await (see iostat man page for details)."
@@ -58,6 +60,7 @@ show_help() {
 while [ ! -z "$1" ]; do 
     case $1 in
         -b) BRIEF=1 ;;
+        -s) SILENT=1 ;;
         -d) shift; ORIGDISK=$1; DISK=${1////!} ;;
         -w) shift; WARNING=$1 ;;
         -c) shift; CRITICAL=$1 ;;
@@ -290,4 +293,7 @@ else
     echo "$TPS io/s, read ${KBYTES_READ_PER_SEC}kB/s, write ${KBYTES_WRITTEN_PER_SEC}kB/s, ave. queue size ${AQUSZ} | tps=${TPS}io/s;;; read=${BYTES_READ_PER_SEC}b/s;;; write=${BYTES_WRITTEN_PER_SEC}b/s;;; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT}ms;;;"
 fi
 
+if [[ $SILENT -eq 1 ]]; then
+  EXITCODE=$E_OK
+fi
 exit $EXITCODE
