@@ -44,7 +44,8 @@ read|write/s or average queue length is reached.
                        READ and WRITE are in sectors per seconds
   -W/C NUM             Use average queue length thresholds instead..
   -b                   Brief output.
-
+  -s                   silent output: no warnings or critials are issued
+  
 Performance data for graphing is supplied for tps, read, write, avgrq-sz,
 avgqu-sz and await (see iostat man page for details).
 
