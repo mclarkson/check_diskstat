@@ -1,5 +1,5 @@
 ++++
-<img src="http://www.smorg.co.uk/images/check_diskstat.png"
+<img src="http://nagrestconf.smorg.co.uk/images/ext/check_diskstat.png"
 alt="Nagios GUI Screenshot" style="float:none" />
 ++++
 
