@@ -1,6 +1,8 @@
 #!/bin/bash
 # Original Author: Unknown
 #
+# Changes: 17-Aug-2014 Michal Svamberg <svamberg@civ.zcu.cz>
+#          Added support for symlinks used in /dev/disk/*
 # Changes: 12-Jul-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 #          Added support for logical volume names.
 # Changes: 25-Feb-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
@@ -39,6 +41,8 @@ show_help() {
     echo "  -d DEVICE            DEVICE must be without /dev (ex: -d sda)."
     echo "                       To specify a LVM logical volume use:"
     echo "                       volgroup/logvol."
+    echo "                       To specify symlink from /dev/disk/ use full path, ex:"
+    echo "                       /dev/disk/by-id/scsi-35000c50035006fb3"
     echo "  -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)"
     echo "                       READ and WRITE are in sectors per seconds"
     echo "  -W/C NUM             Use average queue length thresholds instead.."
@@ -57,7 +61,7 @@ show_help() {
 }
 
 # process args
-while [ ! -z "$1" ]; do 
+while [ ! -z "$1" ]; do
     case $1 in
         -b) BRIEF=1 ;;
         -s) SILENT=1 ;;
@@ -92,7 +96,7 @@ sanitize() {
             echo "Need critical threshold"
             exit $E_UNKNOWN
         fi
-    
+
         if [ -z "$WARN_TPS" -o -z "$WARN_READ" -o -z "$WARN_WRITE" ]; then
             echo "Need 3 values for warning threshold (tps,read,write)"
             exit $E_UNKNOWN
@@ -107,7 +111,7 @@ sanitize() {
             exit $E_UNKNOWN
         fi
     fi
-        
+
 }
 
 readdiskstat() {
@@ -144,6 +148,10 @@ if [ ! -e /sys/block/$DISK/stat ]; then
             exit $E_UNKNOWN
         }
         DISK="dm-$MINOR"
+    elif [[ -L $ORIGDISK ]]; then
+        # Symlink to device name 
+        SNAME=`readlink $ORIGDISK`
+        DISK=`basename $SNAME`
     else
         echo "Could not find disk stats, check your /sys filesystem for $DISK"
         exit $E_UNKNOWN
@@ -231,7 +239,7 @@ let "TIMEINQ = $NEW_TIMEINQ - $OLD_TIMEINQ" #ms
 
 let "AQUSZ = ( $TIMEINQ / $TIME ) / 1000"
 
-if [[ $NR_IOS -ne 0 ]]; then 
+if [[ $NR_IOS -ne 0 ]]; then
     let "AWAIT = ( $READ_TICKS + $WRITE_TICKS ) / $NR_IOS"
     let "ARQSZ = ( $SECTORS_READ + $SECTORS_WRITE ) / $NR_IOS"
 else
@@ -269,7 +277,7 @@ if [ -z $WARN_QSZ ]; then
             OUTPUT="${OUTPUT}critical write sectors/s (>$CRIT_WRITE), "
             EXITCODE=$E_CRITICAL
         else
-            OUTPUT="${OUTPUT}warning write sectors/s (>$WARN_WRITE), " 
+            OUTPUT="${OUTPUT}warning write sectors/s (>$WARN_WRITE), "
             [ "$EXITCODE" -lt $E_CRITICAL ] && EXITCODE=$E_WARNING
         fi
     fi
