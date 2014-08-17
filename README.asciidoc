@@ -40,6 +40,8 @@ read|write/s or average queue length is reached.
   -d DEVICE            DEVICE must be without /dev (ex: -d sda).
                        To specify a LVM logical volume use:
                        volgroup/logvol.
+                       To specify symlink from /dev/disk/ use full path, ex:
+                       /dev/disk/by-id/scsi-35000c50035006fb3
   -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)
                        READ and WRITE are in sectors per seconds
   -W/C NUM             Use average queue length thresholds instead..
