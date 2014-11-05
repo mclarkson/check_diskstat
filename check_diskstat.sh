@@ -15,10 +15,10 @@
 #                      issued to the device to be served.
 # Changes: 12-Jul-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 #          Added support for logical volume names.
-# Changes: 05-Nov-2014 Michal Svamberg <svamberg@civ.zcu.cz>
-#          Fix when too much devices, translate hex output of stat to decimal
 # Changes: 17-Aug-2014 Michal Svamberg <svamberg@civ.zcu.cz>
 #          Added support for symlinks used in /dev/disk/*
+# Changes: 05-Nov-2014 Michal Svamberg <svamberg@civ.zcu.cz>
+#          Fix when too much devices, translate hex output of stat to decimal
 
 DISK=
 WARNING=
