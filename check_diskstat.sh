@@ -1,10 +1,6 @@
 #!/bin/bash
 # Original Author: Unknown
 #
-# Changes: 17-Aug-2014 Michal Svamberg <svamberg@civ.zcu.cz>
-#          Added support for symlinks used in /dev/disk/*
-# Changes: 12-Jul-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
-#          Added support for logical volume names.
 # Changes: 25-Feb-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 #          Added brief option to reduce size of output
 #          Added current user to cache file name. Allows other users
@@ -17,6 +13,12 @@
 #           avgqu-sz - average queue size, and
 #           await    - The average time (in milliseconds) for I/O requests
 #                      issued to the device to be served.
+# Changes: 12-Jul-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#          Added support for logical volume names.
+# Changes: 05-Nov-2014 Michal Svamberg <svamberg@civ.zcu.cz>
+#          Fix when too much devices, translate hex output of stat to decimal
+# Changes: 17-Aug-2014 Michal Svamberg <svamberg@civ.zcu.cz>
+#          Added support for symlinks used in /dev/disk/*
 
 DISK=
 WARNING=
@@ -142,7 +144,8 @@ if [ ! -e /sys/block/$DISK/stat ]; then
     # The device does not exist.
     if [[ $ORIGDISK =~ "/" && -b /dev/$ORIGDISK ]]; then
         # The minor device no. maps to /dev/dm-N
-        MINOR=`stat -L /dev/$ORIGDISK --printf="%T\n"`
+        MINOR_HEX=`stat -L /dev/$ORIGDISK --printf="%T\n"`
+        MINOR=`echo $((16#$MINOR_HEX))` # translate hex output to decimal
         [[ $? -ne 0 ]] && {
             echo "Could not stat '/dev/$ORIGDISK', check your /sys filesystem for $DISK"
             exit $E_UNKNOWN
