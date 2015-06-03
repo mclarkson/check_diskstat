@@ -19,6 +19,9 @@
 #          Added support for symlinks used in /dev/disk/*
 # Changes: 05-Nov-2014 Michal Svamberg <svamberg@civ.zcu.cz>
 #          Fix when too much devices, translate hex output of stat to decimal
+# Changes: 04-Jun-2015 Michal Svamberg <svamberg@civ.zcu.cz>
+#          Fix overflowing counters
+
 
 DISK=
 WARNING=
@@ -198,6 +201,14 @@ NEW_SECTORS_WRITTEN=$(echo $NEWDISKSTAT | awk '{print $7}')
 # kernel handles sectors by 512bytes
 # http://www.mjmwired.net/kernel/Documentation/block/stat.txt
 SECTORBYTESIZE=512
+
+# fix overflowing 32bit counter (4294967296 = 2^32)
+if [ $NEW_SECTORS_READ -lt $OLD_SECTORS_READ ] ; then
+        let "OLD_SECTORS_READ = $OLD_SECTORS_READ - 4294967296"
+fi
+if [ $NEW_SECTORS_WRITTEN -lt $OLD_SECTORS_WRITTEN ] ; then
+        let "OLD_SECTORS_WRITTEN = $OLD_SECTORS_WRITTEN - 4294967296";
+fi
 
 let "SECTORS_READ = $NEW_SECTORS_READ - $OLD_SECTORS_READ"
 let "SECTORS_WRITE = $NEW_SECTORS_WRITTEN - $OLD_SECTORS_WRITTEN"
