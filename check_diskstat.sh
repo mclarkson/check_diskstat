@@ -21,6 +21,8 @@
 #          Fix when too much devices, translate hex output of stat to decimal
 # Changes: 04-Jun-2015 Michal Svamberg <svamberg@civ.zcu.cz>
 #          Fix overflowing counters
+# Changes: 22-Feb-2016 Mark Clarkson <mark.clarkson@smorg.co.uk>
+#          Check for negative values
 
 
 DISK=
