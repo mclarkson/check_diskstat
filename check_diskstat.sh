@@ -308,6 +308,14 @@ else
     fi
 fi
 
+for i in ${TPS} ${BYTES_READ_PER_SEC} ${BYTES_WRITTEN_PER_SEC} \
+    ${ARQSZ} ${AQUSZ} ${AWAIT}
+do
+    [[ $i -lt 0 ]] && {
+        echo "Negative values, skipping this round."
+        exit $E_UNKNOWN
+    }
+done
 
 if [[ $BRIEF -eq 0 ]]; then
     echo "${OUTPUT}summary: $TPS io/s, read $SECTORS_READ sectors (${KBYTES_READ_PER_SEC}kB/s), write $SECTORS_WRITE sectors (${KBYTES_WRITTEN_PER_SEC}kB/s), queue size $AQUSZ in $TIME seconds | tps=${TPS}io/s;;; read=${BYTES_READ_PER_SEC}b/s;;; write=${BYTES_WRITTEN_PER_SEC}b/s;;; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT}ms;;;"
