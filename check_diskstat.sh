@@ -1,7 +1,7 @@
 #!/bin/bash
 # Original Author: Unknown
 #
-# Version 0.12.1
+# Version 0.12.2
 #
 # Changes: 25-Feb-2013 Mark Clarkson <mark.clarkson@smorg.co.uk>
 #          Added brief option to reduce size of output
