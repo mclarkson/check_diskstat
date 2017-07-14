@@ -330,9 +330,9 @@ do
 done
 
 if [[ $BRIEF -eq 0 ]]; then
-    echo "${OUTPUT}summary: $TPS io/s, read $SECTORS_READ sectors (${KBYTES_READ_PER_SEC}kB/s), write $SECTORS_WRITE sectors (${KBYTES_WRITTEN_PER_SEC}kB/s), queue size $AQUSZ in $TIME seconds | tps=${TPS}io/s;$WARN_TPS;$CRIT_TPS; read=${BYTES_READ_PER_SEC}b/s;$WARN_READ;$CRIT_READ; write=${BYTES_WRITTEN_PER_SEC}b/s;$WARN_WRITE;$CRIT_WRITE; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT}ms;;;"
+    echo "${OUTPUT}summary: $TPS io/s, read $SECTORS_READ sectors (${KBYTES_READ_PER_SEC}kB/s), write $SECTORS_WRITE sectors (${KBYTES_WRITTEN_PER_SEC}kB/s), queue size $AQUSZ in $TIME seconds | tps=${TPS};$WARN_TPS;$CRIT_TPS; read=${BYTES_READ_PER_SEC};$WARN_READ;$CRIT_READ; write=${BYTES_WRITTEN_PER_SEC};$WARN_WRITE;$CRIT_WRITE; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT};;;"
 else
-    echo "$TPS io/s, read ${KBYTES_READ_PER_SEC}kB/s, write ${KBYTES_WRITTEN_PER_SEC}kB/s, ave. queue size ${AQUSZ} | tps=${TPS}io/s;$WARN_TPS;$CRIT_TPS; read=${BYTES_READ_PER_SEC}b/s;$WARN_READ;$CRIT_READ; write=${BYTES_WRITTEN_PER_SEC}b/s;$WARN_WRITE;$CRIT_WRITE; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT}ms;;;"
+    echo "$TPS io/s, read ${KBYTES_READ_PER_SEC}kB/s, write ${KBYTES_WRITTEN_PER_SEC}kB/s, ave. queue size ${AQUSZ} | tps=${TPS};$WARN_TPS;$CRIT_TPS; read=${BYTES_READ_PER_SEC};$WARN_READ;$CRIT_READ; write=${BYTES_WRITTEN_PER_SEC};$WARN_WRITE;$CRIT_WRITE; avgrq-sz=${ARQSZ};;; avgqu-sz=${AQUSZ};$WARN_QSZ;$CRIT_QSZ; await=${AWAIT};;;"
 fi
 
 if [[ $SILENT -eq 1 ]]; then
