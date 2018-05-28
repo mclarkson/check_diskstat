@@ -34,7 +34,7 @@ tps=3io/s;;; read=341b/s;;; write=44970b/s;;; avgrq-sz=24;;; avgqu-sz=0;10;20; a
 ./check_diskstat.sh -d DEVICE [ -w tps,read,write -c tps,read,write ] 
     | [ -W qlen -C qlen ] | -h
 
-This plug-in is used to be alerted when maximum hard drive io/s, sectors
+This plug-in is used to be alerted when maximum hard drive io/s, bytes
 read|write/s or average queue length is reached.
 
   -d DEVICE            DEVICE must be without /dev (ex: -d sda).
@@ -43,7 +43,7 @@ read|write/s or average queue length is reached.
                        To specify symlink from /dev/disk/ use full path, ex:
                        /dev/disk/by-id/scsi-35000c50035006fb3
   -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)
-                       READ and WRITE are in sectors per seconds
+                       READ and WRITE are in bytes per seconds
   -W/C NUM             Use average queue length thresholds instead..
   -b                   Brief output.
   -s                   silent output: no warnings or critials are issued

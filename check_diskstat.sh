@@ -46,7 +46,7 @@ show_help() {
     echo "$0 -d DEVICE [ -w tps,read,write -c tps,read,write ] "
     echo "    | [ -W qlen -C qlen ] | -h"
     echo
-    echo "This plug-in is used to be alerted when maximum hard drive io/s, sectors"
+    echo "This plug-in is used to be alerted when maximum hard drive io/s, bytes"
     echo "read|write/s or average queue length is reached."
     echo
     echo "  -d DEVICE            DEVICE must be without /dev (ex: -d sda)."
@@ -55,7 +55,7 @@ show_help() {
     echo "                       To specify symlink from /dev/disk/ use full path, ex:"
     echo "                       /dev/disk/by-id/scsi-35000c50035006fb3"
     echo "  -w/c TPS,READ,WRITE  TPS means transfer per seconds (aka IO/s)"
-    echo "                       READ and WRITE are in sectors per seconds"
+    echo "                       READ and WRITE are in bytes per second"
     echo "  -W/C NUM             Use average queue length thresholds instead.."
     echo "  -b                   Brief output."
     echo "  -s                   silent output: no warnings or critials are issued"
@@ -289,10 +289,10 @@ if [ -z $WARN_QSZ ]; then
     # check read
     if [ $BYTES_READ_PER_SEC -gt $WARN_READ ]; then
         if [ $BYTES_READ_PER_SEC -gt $CRIT_READ ]; then
-            OUTPUT="${OUTPUT}critical read sectors/s (>$CRIT_READ), "
+            OUTPUT="${OUTPUT}critical read bytes/s (>$CRIT_READ), "
             EXITCODE=$E_CRITICAL
         else
-            OUTPUT="${OUTPUT}warning read sectors/s (>$WARN_READ), "
+            OUTPUT="${OUTPUT}warning read bytes/s (>$WARN_READ), "
             [ "$EXITCODE" -lt $E_CRITICAL ] && EXITCODE=$E_WARNING
         fi
     fi
@@ -300,10 +300,10 @@ if [ -z $WARN_QSZ ]; then
     # check write
     if [ $BYTES_WRITTEN_PER_SEC -gt $WARN_WRITE ]; then
         if [ $BYTES_WRITTEN_PER_SEC -gt $CRIT_WRITE ]; then
-            OUTPUT="${OUTPUT}critical write sectors/s (>$CRIT_WRITE), "
+            OUTPUT="${OUTPUT}critical write bytes/s (>$CRIT_WRITE), "
             EXITCODE=$E_CRITICAL
         else
-            OUTPUT="${OUTPUT}warning write sectors/s (>$WARN_WRITE), "
+            OUTPUT="${OUTPUT}warning write bytes/s (>$WARN_WRITE), "
             [ "$EXITCODE" -lt $E_CRITICAL ] && EXITCODE=$E_WARNING
         fi
     fi
